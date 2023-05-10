@@ -33,7 +33,6 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
     // Initialize Redis
     const redis = new Redis(host, port, db, username, password);
-    await redis.init();
 
     // Run substreams
     const substreams = run(spkg, moduleName, options);
