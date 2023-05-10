@@ -42,7 +42,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
             let key = operation.key;
             let value = new TextDecoder().decode(operation.value);
             await redis.set(key, value);
-            logger.info({ key, value });
+            logger.info(JSON.stringify({ key, value }));
         };
     });
 
