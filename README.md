@@ -13,8 +13,11 @@
 ### Further resources
 
 - [**Substreams** documentation](https://substreams.streamingfast.io)
+- [**Redis** documentation](https://redis.io/docs/about/)
 
 ### Protobuf
+
+- [`sf.substreams.sink.kv.v1.KVOperations`](https://github.com/streamingfast/substreams-sink-kv/blob/develop/proto/substreams/sink/kv/v1/kv.proto)
 
 ## CLI
 [**Use pre-built binaries**](https://github.com/pinax-network/substreams-sink-redis/releases)
@@ -41,4 +44,4 @@ $ substreams-sink-redis run [options] <spkg>
   - [ ] Read from `substreams.yaml` local filesystem
 - [x] Handle `cursor` restart
 
-### Redis
+<!-- ### Redis -->
