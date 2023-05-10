@@ -39,7 +39,10 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
     substreams.on("anyMessage", async (messages: KVOperations) => {
         for (const operation of messages.operations || []) {
-            console.log(operation);
+            let key = operation.key;
+            let value = new TextDecoder().decode(operation.value);
+            await redis.set(key, value);
+            logger.info({ key, value });
         };
     });
 
