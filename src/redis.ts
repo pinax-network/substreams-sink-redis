@@ -15,4 +15,8 @@ export class Redis {
     public async set(key: string, value: any) {
         await this.client.set(key, value);
     }
+
+    public async mset(keyValues: any) {
+        await this.client.mset(keyValues);
+    }
 }
