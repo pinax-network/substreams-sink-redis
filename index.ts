@@ -52,7 +52,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
 
             if (clock.timestamp) {
                 const epoch = clock.timestamp.toDate().valueOf();
-                if (epoch / 1000 % storeInterval === 0) {
+                if (storeInterval <= 0 || epoch / 1000 % storeInterval === 0) {
                     await redis.mset(tempStore);
                     logger.info(JSON.stringify(tempStore));
                     tempStore = {};
