@@ -39,19 +39,17 @@
         "pkg": "ncc build bin/cli.ts -o build && pkg build/index.js"
     },
     "dependencies": {
-        "commander": "^10.0.0",
-        "dotenv": "^16.0.3",
-        "ioredis": "^5.3.2",
-        "substreams": "^0.5.6",
-        "substreams-sink": "^0.2.0"
+        "commander": "latest",
+        "dotenv": "latest",
+        "ioredis": "latest",
+        "substreams": "0.7.x",
+        "substreams-sink": "0.3.x"
     },
     "devDependencies": {
-        "@types/node": "^20.1.1",
-        "@vercel/ncc": "^0.36.1",
-        "pkg": "^5.8.1",
-        "ts-node-dev": "^2.0.0",
-        "tsup": "^6.7.0",
-        "typed-emitter": "^2.1.0",
-        "typescript": "^5.0.2"
+        "@types/node": "latest",
+        "@vercel/ncc": "latest",
+        "pkg": "latest",
+        "tsup": "latest",
+        "typescript": "latest"
     }
 }
