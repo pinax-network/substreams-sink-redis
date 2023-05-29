@@ -36,7 +36,7 @@
     "scripts": {
         "prepublishOnly": "tsc",
         "build": "tsup index.ts bin/cli.ts --dts",
-        "pkg": "ncc build bin/cli.ts -o build && pkg build/index.js"
+        "pkg": "ncc build bin/cli.ts -o build && pkg dist/bin/cli.js --target linux-x64,mac-x64,win-x64,mac-arm64 --output substreams-sink-redis"
     },
     "dependencies": {
         "commander": "latest",
