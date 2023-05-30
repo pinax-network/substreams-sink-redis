@@ -16,6 +16,7 @@ export const DEFAULT_REDIS_USERNAME = '';
 export const DEFAULT_REDIS_PASSWORD = '';
 export const DEFAULT_REDIS_TLS = false;
 export const DEFAULT_STORE_INTERVAL = 30;
+export const DEFAULT_PREFIX = '';
 
 // Custom user options interface
 interface ActionOptions extends RunOptions {
@@ -26,6 +27,7 @@ interface ActionOptions extends RunOptions {
     password: string,
     tls: boolean,
     storeInterval: number,
+    prefix: string,
 }
 
 export async function action(manifest: string, moduleName: string, options: ActionOptions) {
@@ -46,7 +48,7 @@ export async function action(manifest: string, moduleName: string, options: Acti
     substreams.on("anyMessage", async (messages: KVOperations, clock: Clock) => {
         for (const operation of messages.operations || []) {
 
-            let key = operation.key;
+            let key = options.prefix + ":" + operation.key;
             let value = new TextDecoder().decode(operation.value);
             tempStore[key] = value;
 
