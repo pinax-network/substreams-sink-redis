@@ -5,7 +5,7 @@ import { Redis } from "./src/redis";
 
 import pkg from "./package.json";
 
-logger.defaultMeta = { service: pkg.name };
+logger.setName(pkg.name);
 export { logger };
 
 // default redis options

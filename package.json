@@ -1,6 +1,6 @@
 {
     "name": "substreams-sink-redis",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Substreams redis sink module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -43,7 +43,7 @@
         "dotenv": "latest",
         "ioredis": "latest",
         "substreams": "0.7.x",
-        "substreams-sink": "0.3.x"
+        "substreams-sink": "0.4.x"
     },
     "devDependencies": {
         "@types/node": "latest",
