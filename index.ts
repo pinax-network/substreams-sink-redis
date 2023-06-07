@@ -1,9 +1,9 @@
-import { Clock, download, KVOperations } from "substreams";
-import { run, logger, RunOptions } from "substreams-sink";
+import { fetchSubstream } from "@substreams/core";
+import { run, logger, cli } from "substreams-sink";
 
-import { Redis } from "./src/redis";
+import { Redis } from "./src/redis.js";
 
-import pkg from "./package.json";
+import pkg from "./package.json" assert { type: "json" };
 
 logger.setName(pkg.name);
 export { logger };
@@ -19,7 +19,7 @@ export const DEFAULT_STORE_INTERVAL = 30;
 export const DEFAULT_PREFIX = '';
 
 // Custom user options interface
-interface ActionOptions extends RunOptions {
+interface ActionOptions extends cli.RunOptions {
     host: string,
     port: string,
     db: string,
@@ -30,9 +30,8 @@ interface ActionOptions extends RunOptions {
     prefix: string,
 }
 
-export async function action(manifest: string, moduleName: string, options: ActionOptions) {
-    // Download substreams
-    const spkg = await download(manifest);
+export async function action(options: ActionOptions) {
+    const spkg = await fetchSubstream(options.manifest!);
 
     // Get command options
     const { host, port, db, username, password, storeInterval, tls } = options;
@@ -41,15 +40,15 @@ export async function action(manifest: string, moduleName: string, options: Acti
     const redis = new Redis(host, port, db, username, password, tls);
 
     // Run substreams
-    const substreams = run(spkg, moduleName, options);
+    const substreams = run(spkg, options);
 
     let tempStore: any = {};
 
-    substreams.on("anyMessage", async (messages: KVOperations, clock: Clock) => {
+    substreams.on("anyMessage", async (messages: any, _: any, clock: any) => {
         for (const operation of messages.operations || []) {
 
-            let key = options.prefix + ":" + operation.key;
-            let value = new TextDecoder().decode(operation.value);
+            let key = options.prefix ? options.prefix + ":" + operation.key : operation.key;
+            let value = operation.value;
             tempStore[key] = value;
 
             if (clock.timestamp) {
