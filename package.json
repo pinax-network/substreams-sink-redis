@@ -41,7 +41,7 @@
         "commander": "latest",
         "dotenv": "latest",
         "ioredis": "latest",
-        "substreams-sink": "file:../substreams-sink"
+        "substreams-sink": "^0.6.1"
     },
     "devDependencies": {
         "@tsconfig/recommended": "latest",
