@@ -1,5 +1,6 @@
 import { fetchSubstream } from "@substreams/core";
-import { run, logger, cli } from "substreams-sink";
+import { BlockEmitter } from "@substreams/node";
+import { setup, logger, commander, config } from "substreams-sink";
 
 import { Redis } from "./src/redis.js";
 
@@ -19,9 +20,9 @@ export const DEFAULT_STORE_INTERVAL = 30;
 export const DEFAULT_PREFIX = '';
 
 // Custom user options interface
-interface ActionOptions extends cli.RunOptions {
-    host: string,
-    port: string,
+interface ActionOptions extends commander.RunOptions {
+    redisHost: string,
+    redisPort: number,
     db: string,
     username: string,
     password: string,
@@ -31,16 +32,14 @@ interface ActionOptions extends cli.RunOptions {
 }
 
 export async function action(options: ActionOptions) {
-    const spkg = await fetchSubstream(options.manifest!);
-
     // Get command options
-    const { host, port, db, username, password, storeInterval, tls } = options;
+    const { redisHost, redisPort, db, username, password, storeInterval, tls } = options;
 
     // Initialize Redis
-    const redis = new Redis(host, port, db, username, password, tls);
+    const redis = new Redis(redisHost, redisPort, db, username, password, tls);
 
-    // Run substreams
-    const substreams = run(spkg, options);
+    // Setup substreams
+    const substreams = await setup(options, pkg);
 
     let tempStore: any = {};
 
