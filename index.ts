@@ -1,6 +1,4 @@
-import { fetchSubstream } from "@substreams/core";
-import { BlockEmitter } from "@substreams/node";
-import { setup, logger, commander, config } from "substreams-sink";
+import { setup, logger, commander } from "substreams-sink";
 
 import { Redis } from "./src/redis.js";
 
@@ -39,11 +37,11 @@ export async function action(options: ActionOptions) {
     const redis = new Redis(redisHost, redisPort, db, username, password, tls);
 
     // Setup substreams
-    const substreams = await setup(options, pkg);
+    const { emitter } = await setup(options, pkg);
 
     let tempStore: any = {};
 
-    substreams.on("anyMessage", async (messages: any, _: any, clock: any) => {
+    emitter.on("anyMessage", async (messages: any, _: any, clock: any) => {
         for (const operation of messages.operations || []) {
 
             let key = options.prefix ? options.prefix + ":" + operation.key : operation.key;
@@ -61,5 +59,5 @@ export async function action(options: ActionOptions) {
         };
     });
 
-    substreams.start(options.delayBeforeStart);
+    emitter.start();
 }

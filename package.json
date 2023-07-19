@@ -5,6 +5,9 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "type": "module",
+    "bin": {
+        "substreams-sink-redis": "dist/bin/cli.js"
+    },
     "repository": "git@github.com:pinax-network/substreams-sink-redis.git",
     "keywords": [
         "substreams",
@@ -32,20 +35,27 @@
     ],
     "license": "MIT OR Apache-2.0",
     "scripts": {
-        "prepublishOnly": "tsc",
-        "build": "tsc"
+        "start": "tsc && node ./dist/bin/cli.js run",
+        "build": "tsc",
+        "rollup": "rollup --config rollup.config.mjs",
+        "linux": "npm run build && npm run rollup && ./scripts/build.linux.sh",
+        "macos": "npm run build && npm run rollup && ./scripts/build.macos.sh",
+        "windows": "npm run build && npm run rollup && ./scripts/build.windows.sh",
+        "prepublishOnly": "npm run build"
     },
     "dependencies": {
-        "@substreams/core": "^0.1.10",
-        "@substreams/node": "^0.1.3",
         "commander": "latest",
         "dotenv": "latest",
         "ioredis": "latest",
-        "substreams-sink": "^0.6.1"
+        "substreams-sink": "^0.7.x"
     },
     "devDependencies": {
+        "@rollup/plugin-commonjs": "^25.0.3",
+        "@rollup/plugin-json": "^6.0.0",
+        "@rollup/plugin-node-resolve": "^15.1.0",
         "@tsconfig/recommended": "latest",
         "@types/node": "latest",
+        "rollup": "^3.26.3",
         "typescript": "latest"
     }
 }
