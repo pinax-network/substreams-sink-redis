@@ -8,7 +8,7 @@ NODE=$(asdf which node || nvm which node || command -v node)
 cp "$NODE" substreams-sink-redis-macos
 
 # Remove the signature of the binary.
-codesign --remove-signature substreams-sink-redis-macos 
+codesign --remove-signature substreams-sink-redis-macos
 
 # Inject the blob into the copied binary.
 npx postject substreams-sink-redis-macos NODE_SEA_BLOB out/sea.blob \

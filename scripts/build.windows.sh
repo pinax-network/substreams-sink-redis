@@ -7,7 +7,7 @@ node --experimental-sea-config sea-config.json
 cp (Get-Command node).Source substreams-sink-redis-win.exe
 
 # Remove the signature of the binary.
-signtool remove /s substreams-sink-redis-win.exe 
+signtool remove /s substreams-sink-redis-win.exe
 
 # Inject the blob into the copied binary.
 npx postject substreams-sink-redis-win.exe NODE_SEA_BLOB dist/sea.blob \

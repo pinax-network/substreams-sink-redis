@@ -1,7 +1,7 @@
 {
     "name": "substreams-sink-redis",
     "version": "0.2.0",
-    "description": "Substreams redis sink module",
+    "description": "Substreams Redis sink module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "type": "module",
@@ -35,27 +35,31 @@
     ],
     "license": "MIT OR Apache-2.0",
     "scripts": {
-        "start": "tsc && node ./dist/bin/cli.js run",
+        "start": "tsc && node --no-warnings ./dist/bin/cli.js run",
         "build": "tsc",
         "rollup": "rollup --config rollup.config.mjs",
         "linux": "npm run build && npm run rollup && ./scripts/build.linux.sh",
         "macos": "npm run build && npm run rollup && ./scripts/build.macos.sh",
         "windows": "npm run build && npm run rollup && ./scripts/build.windows.sh",
-        "prepublishOnly": "npm run build"
+        "prepublishOnly": "npm run build",
+        "codegen": "buf generate ./proto"
     },
     "dependencies": {
-        "commander": "latest",
-        "dotenv": "latest",
-        "ioredis": "latest",
-        "substreams-sink": "^0.7.x"
+        "p-queue": "latest",
+        "redis": "latest",
+        "substreams-sink": "^0.7.x",
+        "substreams-sink-prometheus": "0.7.5"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^25.0.3",
-        "@rollup/plugin-json": "^6.0.0",
-        "@rollup/plugin-node-resolve": "^15.1.0",
+        "@bufbuild/buf": "latest",
+        "@bufbuild/protoc-gen-connect-es": "latest",
+        "@bufbuild/protoc-gen-es": "latest",
+        "@rollup/plugin-commonjs": "latest",
+        "@rollup/plugin-json": "latest",
+        "@rollup/plugin-node-resolve": "latest",
         "@tsconfig/recommended": "latest",
         "@types/node": "latest",
-        "rollup": "^3.26.3",
+        "rollup": "latest",
         "typescript": "latest"
     }
 }
