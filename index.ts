@@ -25,5 +25,11 @@ export async function action(options: ActionOptions) {
             // logger.info("OUTPUT", message);
         })
     });
-    emitter.start();
+    await emitter.start();
+    logger.info("Checking if queue is empty...");
+    await queue.onEmpty();
+    logger.info("Disconnecting...");
+    await client.disconnect();
+    logger.info("Exit");
+    process.exit();
 }

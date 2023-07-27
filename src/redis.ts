@@ -1,4 +1,4 @@
-import type { RedisClientType, RedisDefaultModules, RedisModules, RedisFunctions, RedisScripts } from "redis";
+import { type RedisClientType, type RedisDefaultModules, type RedisModules, type RedisFunctions, type RedisScripts, TimeSeriesAggregationType, TimeSeriesDuplicatePolicies } from "redis";
 import type { Clock } from "@substreams/core/proto"
 import type { Message, AnyMessage } from "@bufbuild/protobuf"
 import type { KVOperation, KVOperations } from "./generated/sf/substreams/sink/kv/v1/kv_pb.js";
@@ -71,11 +71,18 @@ export async function handleKVOperation(client: Redis, operation: KVOperation, c
     const value = Buffer.from(operation.value).toString();
     SET(client, operation.key, value);
 }
+function toTimestamp(clock: Clock) {
+    if ( !clock.timestamp ) throw new Error("Clock is required");
+    console.log(clock);
+    const seconds = Number(clock.timestamp.seconds) * 1000;
+    const nanos = Number(clock.timestamp.nanos) / 1000000;
+    return seconds + nanos;
+}
 
 export function ADD(client: Redis, key: string, value: number, clock: Clock) {
-    const timestamp = Number(clock.number);
+    const timestamp = toTimestamp(clock);
     console.log("ADD", {key, timestamp, value});
-    client.ts.ADD(key, timestamp, value)
+    client.ts.ADD(key, timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM})
 }
 
 export function SET(client: Redis, key: string, value: string) {

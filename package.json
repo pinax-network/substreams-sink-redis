@@ -47,8 +47,8 @@
     "dependencies": {
         "p-queue": "latest",
         "redis": "latest",
-        "substreams-sink": "^0.7.x",
-        "substreams-sink-prometheus": "0.7.5"
+        "substreams-sink": "^0.7.3",
+        "substreams-sink-prometheus": "^0.7.5"
     },
     "devDependencies": {
         "@bufbuild/buf": "latest",
