@@ -1,10 +1,10 @@
-import { type RedisClientType, type RedisDefaultModules, type RedisModules, type RedisFunctions, type RedisScripts, TimeSeriesAggregationType, TimeSeriesDuplicatePolicies } from "redis";
+import { TimeSeriesDuplicatePolicies } from "redis";
+import type { RedisClientType, RedisDefaultModules, RedisModules, RedisFunctions, RedisScripts } from "redis";
 import type { Clock } from "@substreams/core/proto"
 import type { Message, AnyMessage } from "@bufbuild/protobuf"
 import type { KVOperation, KVOperations } from "./generated/sf/substreams/sink/kv/v1/kv_pb.js";
-import type { PrometheusOperation, PrometheusOperations } from "substreams-sink-prometheus/";
+import type { PrometheusOperation, PrometheusOperations, PrometheusCounter, PrometheusGauge } from "substreams-sink-prometheus";
 import type { ActionOptions } from "../bin/cli.js";
-import type { PrometheusCounter, PrometheusGauge } from "./prometheus-sink.js";
 
 export type Redis = RedisClientType<RedisDefaultModules & RedisModules, RedisFunctions, RedisScripts>;
 

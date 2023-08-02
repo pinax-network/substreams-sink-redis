@@ -40,15 +40,14 @@
         "rollup": "rollup --config rollup.config.mjs",
         "linux": "npm run build && npm run rollup && ./scripts/build.linux.sh",
         "macos": "npm run build && npm run rollup && ./scripts/build.macos.sh",
-        "windows": "npm run build && npm run rollup && ./scripts/build.windows.sh",
         "prepublishOnly": "npm run build",
         "codegen": "buf generate ./proto"
     },
     "dependencies": {
         "p-queue": "latest",
         "redis": "latest",
-        "substreams-sink": "^0.7.3",
-        "substreams-sink-prometheus": "^0.7.5"
+        "substreams-sink": "^0.8.2",
+        "substreams-sink-prometheus": "^0.7.8-2"
     },
     "devDependencies": {
         "@bufbuild/buf": "latest",

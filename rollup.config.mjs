@@ -8,6 +8,7 @@ export default {
     output: {
         file: "dist/bundle.js",
         format: "cjs",
+        inlineDynamicImports: true
     },
     plugins: [
         nodeResolve({ extensions: [".ts"] }),

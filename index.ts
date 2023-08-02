@@ -1,5 +1,5 @@
 import { createClient } from 'redis';
-import { logger, setup } from "substreams-sink";
+import { logger, setup, http } from "substreams-sink";
 import pkg from "./package.json" assert { type: "json" };
 import type { ActionOptions } from "./bin/cli.js";
 import { handleOutput } from "./src/redis.js";
@@ -25,6 +25,7 @@ export async function action(options: ActionOptions) {
             // logger.info("OUTPUT", message);
         })
     });
+    await http.listen(options);
     await emitter.start();
     logger.info("Checking if queue is empty...");
     await queue.onEmpty();
