@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import pkg from "../package.json" assert { type: "json" };
-import { commander } from "substreams-sink";
+import { commander, logger } from "substreams-sink";
 import { Option } from "commander";
 import { action } from "../index.js"
 
@@ -32,4 +32,5 @@ commander.run(program, pkg)
     // .option('--password <string>', 'Password to access Redis instance', DEFAULT_REDIS_PASSWORD)
     // .option('-T --tls', 'Use TLS to connect to the Redis instance', DEFAULT_REDIS_TLS)
     .action(action);
+logger.setName(pkg.name);
 program.parse();

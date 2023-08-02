@@ -42,10 +42,10 @@ export async function handlePrometheusCounter(client: Redis, operation: Promethe
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L48
     switch (operation.counter.operation) {
         case "OPERATION_ADD":
-            ADD(client, operation.name, operation.counter.value, clock);
+            ADD(client, operation.name, operation.counter.value, clock, operation.labels);
             break;
         case "OPERATION_INC":
-            ADD(client, operation.name, 1, clock);
+            ADD(client, operation.name, 1, clock, operation.labels);
     }
 }
 
@@ -54,10 +54,10 @@ export async function handlePrometheusGauge(client: Redis, operation: Prometheus
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L23
     switch (operation.gauge.operation) {
         case "OPERATION_ADD":
-            ADD(client, operation.name, operation.gauge.value, clock);
+            ADD(client, operation.name, operation.gauge.value, clock, operation.labels);
             break;
         case "OPERATION_INC":
-            ADD(client, operation.name, 1, clock);
+            ADD(client, operation.name, 1, clock, operation.labels);
     }
 }
 
@@ -78,11 +78,14 @@ function toTimestamp(clock: Clock) {
     const nanos = Number(clock.timestamp.nanos) / 1000000;
     return seconds + nanos;
 }
+export declare type Labels = {
+    [label: string]: string;
+};
 
-export function ADD(client: Redis, key: string, value: number, clock: Clock) {
+export function ADD(client: Redis, key: string, value: number, clock: Clock, labels: Labels) {
     const timestamp = toTimestamp(clock);
-    console.log("ADD", {key, timestamp, value});
-    client.ts.ADD(key, timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM})
+    console.log("ADD", {key, timestamp, value, labels});
+    client.ts.ADD(key, timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels})
 }
 
 export function SET(client: Redis, key: string, value: string) {
