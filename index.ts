@@ -1,13 +1,12 @@
 import { createClient } from 'redis';
 import { logger, setup, http } from "substreams-sink";
 import type { ActionOptions } from "./bin/cli.js";
-import { handleOutput } from "./src/redis.js";
+import { handleClock, handleCursor, handleOutput } from "./src/handlers.js";
 import PQueue from 'p-queue';
 
 export async function action(options: ActionOptions) {
     // Initialize Redis
-    const url = "redis://127.0.0.1:6379"
-    const client = createClient({url});
+    const client = createClient({url: options.kvUrl});
     client.on('error', err => logger.error('Redis Client Error', err));
 
     // Setup substreams
@@ -18,11 +17,12 @@ export async function action(options: ActionOptions) {
     logger.info("Redis connected");
 
     // Queue
-    const queue = new PQueue({concurrency: options.concurrency});
+    const queue = new PQueue({concurrency: 1});
     emitter.on("output", async (message, cursor, clock) => {
         queue.add(async () => {
             await handleOutput(client, message, cursor, clock, options);
-            // logger.info("OUTPUT", message);
+            await handleClock(client, clock, options);
+            await handleCursor(client, cursor, options);
         })
     });
     await http.listen(options);
