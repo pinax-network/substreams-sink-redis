@@ -5,6 +5,7 @@ import type { Message, AnyMessage } from "@bufbuild/protobuf"
 import type { KVOperation, KVOperations } from "./generated/sf/substreams/sink/kv/v1/kv_pb.js";
 import type { PrometheusOperation, PrometheusOperations, PrometheusCounter, PrometheusGauge } from "substreams-sink-prometheus";
 import type { ActionOptions } from "../bin/cli.js";
+import { logger } from "substreams-sink";
 
 export type Redis = RedisClientType<RedisDefaultModules & RedisModules, RedisFunctions, RedisScripts>;
 
@@ -38,7 +39,6 @@ export async function handlePrometheusOperation(client: Redis, operation: Promet
 }
 
 export async function handlePrometheusCounter(client: Redis, operation: PrometheusCounter, clock: Clock) {
-    console.log("COUNTER", operation);
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L48
     switch (operation.counter.operation) {
         case "OPERATION_ADD":
@@ -50,7 +50,6 @@ export async function handlePrometheusCounter(client: Redis, operation: Promethe
 }
 
 export async function handlePrometheusGauge(client: Redis, operation: PrometheusGauge, clock: Clock) {
-    console.log("GAUGE", operation);
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L23
     switch (operation.gauge.operation) {
         case "OPERATION_ADD":
@@ -73,7 +72,6 @@ export async function handleKVOperation(client: Redis, operation: KVOperation, c
 }
 function toTimestamp(clock: Clock) {
     if ( !clock.timestamp ) throw new Error("Clock is required");
-    console.log(clock);
     const seconds = Number(clock.timestamp.seconds) * 1000;
     const nanos = Number(clock.timestamp.nanos) / 1000000;
     return seconds + nanos;
@@ -84,12 +82,13 @@ export declare type Labels = {
 
 export function ADD(client: Redis, key: string, value: number, clock: Clock, labels: Labels) {
     const timestamp = toTimestamp(clock);
-    console.log("ADD", {key, timestamp, value, labels});
-    client.ts.ADD(key, timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels})
+    logger.info("ADD", {key, timestamp, value, labels});
+    process.stdout.write(".");
+    client.ts.ADD(parseKeyLabels(key, labels), timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels})
 }
 
 export function SET(client: Redis, key: string, value: string) {
-    console.log("SET", {key, value});
+    logger.info("SET", {key, value});
     client.SET(key, value);
 }
 
@@ -97,3 +96,10 @@ export function parseKeyPrefix(key: string, prefix?: string) {
     if ( !prefix ) return key;
     return `${prefix}:${key}`
 }
+
+export function parseKeyLabels(key: string, labels: Labels) {
+    const suffix = Object.keys(labels).map(label => `${label}:${labels[label]}`).join(":")
+    return `${key}:${suffix}`
+}
+
+// console.log(parseKeyLabels("rewardslog", {protocol: "bal.defi"}))
