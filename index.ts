@@ -17,13 +17,11 @@ export async function action(options: ActionOptions) {
     logger.info("Redis connected");
 
     // Queue
-    const queue = new PQueue({concurrency: 1});
+    const queue = new PQueue({concurrency: 10});
     emitter.on("output", async (message, cursor, clock) => {
-        queue.add(async () => {
-            await handleOutput(client, message, cursor, clock, options);
-            await handleClock(client, clock, options);
-            await handleCursor(client, cursor, options);
-        })
+        queue.add(async () => handleOutput(client, message, cursor, clock, options));
+        queue.add(async () => handleClock(client, clock, options));
+        queue.add(async () => handleCursor(client, cursor, options));
     });
     await http.listen(options);
     await emitter.start();

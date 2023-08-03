@@ -13,10 +13,10 @@ export declare type Labels = {
 export function ADD(client: Redis, key: string, value: number, clock: Clock, labels: Labels) {
     const timestamp = toTimestamp(clock);
     logger.info("ADD", {key, timestamp, value, labels});
-    client.ts.ADD(key, timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels})
+    return client.ts.ADD(key, timestamp, value, {ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels})
 }
 
 export function SET(client: Redis, key: string, value: string|number) {
     logger.info("SET", {key, value});
-    client.SET(key, value);
+    return client.SET(key, value);
 }
