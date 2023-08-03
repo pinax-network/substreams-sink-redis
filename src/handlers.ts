@@ -21,7 +21,7 @@ export async function handleOutput(client: Redis, message: Message<AnyMessage>, 
 
 export function handleClock(client: Redis, clock: Clock, options: ActionOptions) {
     return Promise.all([
-        SET(client, parseKey("clock:timestamp:seconds", options), toTimestamp(clock)),
+        SET(client, parseKey("clock:timestamp", options), toTimestamp(clock)),
         SET(client, parseKey("clock:number", options), Number(clock.number))
     ]);
 }
