@@ -3,7 +3,9 @@ import type { Clock } from "@substreams/core/proto"
 
 export const manager = UpdateManager.getInstance();
 export const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
-manager.hook();
+export function hook() {
+    manager.hook();
+}
 
 export function frame(clock: Clock) {
     return frames[Number(clock.number) % frames.length];

@@ -6,6 +6,8 @@ import PQueue from 'p-queue';
 import * as stdout from "./src/stdout.js"
 
 export async function action(options: ActionOptions) {
+    if (!options.verbose) stdout.manager.hook();
+
     // Initialize Redis
     const client = createClient({url: options.kvUrl});
     client.on('error', err => logger.error('Redis Client Error', err));
