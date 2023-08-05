@@ -3,6 +3,7 @@ import { logger, setup, http } from "substreams-sink";
 import type { ActionOptions } from "./bin/cli.js";
 import { handleClock, handleCursor, handleOutput } from "./src/handlers.js";
 import PQueue from 'p-queue';
+import * as stdout from "./src/stdout.js"
 
 export async function action(options: ActionOptions) {
     // Initialize Redis
@@ -18,17 +19,24 @@ export async function action(options: ActionOptions) {
 
     // Queue
     const queue = new PQueue({concurrency: 10});
+    let lastUpdate = Date.now();
     emitter.on("output", async (message, cursor, clock) => {
         queue.add(async () => handleOutput(client, message, cursor, clock, options));
-        queue.add(async () => handleClock(client, clock, options));
-        queue.add(async () => handleCursor(client, cursor, options));
+
+        // Only update clock/cursor every second (reduces Redis load)
+        if (Date.now() - lastUpdate > 1000) {
+            stdout.update(clock, [`  Redis queue size: ${queue.size}`]);
+            lastUpdate = Date.now();
+            queue.add(async () => handleClock(client, clock, options));
+            queue.add(async () => handleCursor(client, cursor, options));
+        }
     });
     await http.listen(options);
     await emitter.start();
-    logger.info("Checking if queue is empty...");
-    // await queue.onEmpty();
-    logger.info("Disconnecting...");
+    console.log("Checking if queue is empty...");
+    await queue.onEmpty();
+    console.log("Disconnecting...");
     await client.disconnect();
-    logger.info("Exit");
+    console.log("Exit");
     process.exit();
 }

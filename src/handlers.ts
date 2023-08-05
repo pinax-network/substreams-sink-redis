@@ -51,9 +51,9 @@ export async function handlePrometheusCounter(client: Redis, operation: Promethe
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L48
     switch (operation.counter.operation) {
         case "OPERATION_ADD":
-            return ADD(client, key, operation.counter.value, clock, operation.labels);
+            return ADD(client, key, operation.counter.value, clock, operation.labels, options);
         case "OPERATION_INC":
-            return ADD(client, key, 1, clock, operation.labels);
+            return ADD(client, key, 1, clock, operation.labels, options);
     }
 }
 
@@ -62,9 +62,9 @@ export async function handlePrometheusGauge(client: Redis, operation: Prometheus
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L23
     switch (operation.gauge.operation) {
         case "OPERATION_ADD":
-            return ADD(client, key, operation.gauge.value, clock, operation.labels);
+            return ADD(client, key, operation.gauge.value, clock, operation.labels, options);
         case "OPERATION_INC":
-            return ADD(client, key, 1, clock, operation.labels);
+            return ADD(client, key, 1, clock, operation.labels, options);
     }
 }
 
