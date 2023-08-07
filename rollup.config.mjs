@@ -11,7 +11,9 @@ export default {
         inlineDynamicImports: true
     },
     plugins: [
-        nodeResolve({ extensions: [".ts"] }),
+        nodeResolve({
+            preferBuiltins: true
+        }),
         json(),
         commonjs()
     ],
