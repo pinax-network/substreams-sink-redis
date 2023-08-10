@@ -9,7 +9,7 @@ import { parseKey, toTimestamp } from "./utils.js";
 
 export type Redis = RedisClientType<RedisDefaultModules & RedisModules, RedisFunctions, RedisScripts>;
 
-export async function handleOutput(client: Redis, message: Message<AnyMessage>, cursor: string, clock: Clock, options: ActionOptions ) {
+export async function handleOutput(client: Redis, message: Message<AnyMessage>, cursor: string, clock: Clock, options: ActionOptions) {
     const type = await message.getType();
     switch (type.typeName.toString()) {
         case "pinax.substreams.sink.prometheus.v1.PrometheusOperations":
