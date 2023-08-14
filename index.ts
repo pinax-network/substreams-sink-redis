@@ -1,9 +1,11 @@
 import { createClient } from 'redis';
-import { logger, setup, http } from "substreams-sink";
+import { logger, setup } from "substreams-sink";
 import type { ActionOptions } from "./bin/cli.js";
 import { handleClock, handleCursor, handleOutput } from "./src/handlers.js";
 import PQueue from 'p-queue';
 import * as stdout from "./src/stdout.js"
+import { serve } from './src/serve.js';
+import * as http from "./substreams-sink/http.js"
 
 export async function action(options: ActionOptions) {
     if (!options.verbose) stdout.manager.hook();
@@ -33,6 +35,7 @@ export async function action(options: ActionOptions) {
             queue.add(async () => handleCursor(client, cursor, options));
         }
     });
+    serve(client);
     await http.listen(options);
     await emitter.start();
     console.log("Checking if queue is empty...");

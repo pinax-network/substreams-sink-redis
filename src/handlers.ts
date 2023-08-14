@@ -4,7 +4,7 @@ import type { Message, AnyMessage } from "@bufbuild/protobuf"
 import type { KVOperation, KVOperations } from "./generated/sf/substreams/sink/kv/v1/kv_pb.js";
 import type { PrometheusOperation, PrometheusOperations, PrometheusCounter, PrometheusGauge } from "substreams-sink-prometheus";
 import type { ActionOptions } from "../bin/cli.js";
-import { ADD, SET } from "./redis.js";
+import { TS_ADD, SET } from "./redis.js";
 import { parseKey, toTimestamp } from "./utils.js";
 
 export type Redis = RedisClientType<RedisDefaultModules & RedisModules, RedisFunctions, RedisScripts>;
@@ -51,9 +51,9 @@ export async function handlePrometheusCounter(client: Redis, operation: Promethe
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L48
     switch (operation.counter.operation) {
         case "OPERATION_ADD":
-            return ADD(client, key, operation.counter.value, clock, operation.labels, options);
+            return TS_ADD(client, key, operation.counter.value, clock, operation.labels, options);
         case "OPERATION_INC":
-            return ADD(client, key, 1, clock, operation.labels, options);
+            return TS_ADD(client, key, 1, clock, operation.labels, options);
     }
 }
 
@@ -62,9 +62,9 @@ export async function handlePrometheusGauge(client: Redis, operation: Prometheus
     // https://github.com/pinax-network/substreams-sink-prometheus.rs/blob/main/proto/substreams/sink/prometheus/v1/prometheus.proto#L23
     switch (operation.gauge.operation) {
         case "OPERATION_ADD":
-            return ADD(client, key, operation.gauge.value, clock, operation.labels, options);
+            return TS_ADD(client, key, operation.gauge.value, clock, operation.labels, options);
         case "OPERATION_INC":
-            return ADD(client, key, 1, clock, operation.labels, options);
+            return TS_ADD(client, key, 1, clock, operation.labels, options);
     }
 }
 
