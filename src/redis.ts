@@ -72,11 +72,15 @@ export async function TS_INFO(client: Redis, params: URLSearchParams) {
 // https://redis.io/commands/ts.range/
 export function TS_RANGE(client: Redis, params: URLSearchParams) {
     const key = params.get("key");
-    const fromTimestamp = params.get("fromTimestamp");
-    const toTimestamp = params.get("toTimestamp");
+    const fromTimestamp = params.get("fromTimestamp") ?? "-";
+    const toTimestamp = params.get("toTimestamp") ?? "+";
+    const aggregationType = params.get("aggregationType") as TimeSeriesAggregationType ?? TimeSeriesAggregationType.SUM;
+    const bucketDuration = params.get("bucketDuration") ?? "1";
     if (!key) throw new Error(`[key] is required`);
     if (!fromTimestamp) throw new Error(`[fromTimestamp] is required`);
     if (!toTimestamp) throw new Error(`[toTimestamp] is required`);
+    if (!Object.values(TimeSeriesAggregationType).includes(aggregationType)) throw new Error(`[aggregationType] must be one of ${Object.values(TimeSeriesAggregationType).join(", ")}`);
+    if (parseInt(bucketDuration) <= 0) throw new Error(`[bucketDuration] must be greater than 0`);
     logger.info("TS.RANGE", params);
-    return client.ts.RANGE(key, fromTimestamp, toTimestamp);
+    return client.ts.RANGE(key, fromTimestamp, toTimestamp, { AGGREGATION: { type: aggregationType, timeBucket: bucketDuration } });
 }
