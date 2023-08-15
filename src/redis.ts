@@ -1,5 +1,5 @@
 import { TimeSeriesDuplicatePolicies, TimeSeriesAggregationType } from "redis";
-import type { RedisClientType, RedisDefaultModules, RedisModules, RedisFunctions, RedisScripts } from "redis";
+import type { RedisClientType, RedisDefaultModules, RedisModules, RedisFunctions, RedisScripts, ErrorReply } from "redis";
 import type { Clock } from "@substreams/core/proto"
 import { logger } from "substreams-sink";
 import { toTimestamp } from "./utils.js";
@@ -16,14 +16,27 @@ export function TS_CREATE(client: Redis, key: string, options: ActionOptions) {
     return client.ts.CREATE(key, { RETENTION: options.kvRetentionPeriod });
 }
 
-export function TS_CREATERULE(client: Redis, key: string, options: ActionOptions) {
-    const destinationKey = `${key}:${options.kvBucketDuration}:sum`;
-    logger.info("TS.CREATERULE", { sourceKey: key, destinationKey, aggregation: TimeSeriesAggregationType.SUM, bucketDuration: options.kvBucketDuration });
-    return client.ts.CREATERULE(key, destinationKey, TimeSeriesAggregationType.SUM, options.kvBucketDuration);
+export function TS_CREATERULE(client: Redis, sourceKey: string, destinationKey: string, options: ActionOptions) {
+    logger.info("TS.CREATERULE", { sourceKey, destinationKey, aggregation: TimeSeriesAggregationType.SUM, bucketDuration: options.kvBucketDuration });
+    return client.ts.CREATERULE(sourceKey, destinationKey, TimeSeriesAggregationType.SUM, options.kvBucketDuration);
 }
 
-export function TS_ADD(client: Redis, key: string, value: number, clock: Clock, labels: Labels, options: ActionOptions) {
+export async function TS_ADD(client: Redis, key: string, value: number, clock: Clock, labels: Labels, options: ActionOptions) {
     const timestamp = toTimestamp(clock);
+
+    if (options.kvCreateRules) {
+        const destinationKey = `${key}:${options.kvBucketDuration}:sum`;
+
+        if (!(await client.EXISTS(destinationKey))) {
+            await TS_CREATE(client, destinationKey, options);
+        }
+        try {
+            await TS_CREATERULE(client, key, destinationKey, options);
+        } catch (error: any) {
+            logger.warn(error);
+        }
+    }
+
     logger.info("TS.ADD", { key, timestamp, value, labels });
     return client.ts.ADD(key, timestamp, value, { ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels, RETENTION: options.kvRetentionPeriod });
 }
@@ -38,7 +51,7 @@ export function SET(client: Redis, key: string, value: string | number) {
 export function GET(client: Redis, params: URLSearchParams) {
     const key = params.get("key");
     if (!key) throw new Error(`[key] is required`);
-    logger.info("GET", {key});
+    logger.info("GET", { key });
     return client.GET(key);
 }
 
@@ -52,7 +65,7 @@ export function INFO(client: Redis) {
 export async function TS_INFO(client: Redis, params: URLSearchParams) {
     const key = params.get("key");
     if (!key) throw new Error(`[key] is required`);
-    logger.info("TS.INFO", {key});
+    logger.info("TS.INFO", { key });
     return client.ts.INFO(key);
 }
 
