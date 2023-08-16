@@ -53,13 +53,10 @@ export async function createRules(client: Redis, key: string, options: ActionOpt
         }
         // Create Key
         await TS_CREATE(client, destinationKey, options);
-
         // Create Rule
-        try {
-            await TS_CREATERULE(client, key, destinationKey, options);
-        } catch (error: any) {
-            logger.warn(error);
-        }
+        await TS_CREATERULE(client, key, destinationKey, options);
+        process.exit();
+
         keys.add(destinationKey);
     }
 }
