@@ -1,6 +1,6 @@
 {
     "name": "substreams-sink-redis",
-    "version": "0.3.0",
+    "version": "0.2.1",
     "description": "Substreams Redis sink module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
