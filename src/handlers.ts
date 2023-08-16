@@ -61,7 +61,7 @@ export async function createRules(client: Redis, key: string, options: ActionOpt
         // Create destination key
         if (!keys.has(destinationKey) && !await client.EXISTS(destinationKey)) {
             try {
-                await TS_CREATE(client, destinationKey, labels); // does not include retention period
+                await TS_CREATE(client, destinationKey, labels, 0); // does not include retention period
                 keys.add(destinationKey);
             } catch (e: any) {
                 logger.warn(`Failed to create key ${key}`, e);
