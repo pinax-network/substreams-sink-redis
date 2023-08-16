@@ -11,9 +11,9 @@ export declare type Labels = {
     [label: string]: string;
 };
 
-export function TS_CREATE(client: Redis, key: string, options: ActionOptions) {
-    logger.info("TS.CREATE", { key });
-    return client.ts.CREATE(key, { RETENTION: options.kvRetentionPeriod });
+export function TS_CREATE(client: Redis, key: string, labels: Labels, kvRetentionPeriod?: number) {
+    logger.info("TS.CREATE", { key, kvRetentionPeriod });
+    return client.ts.CREATE(key, { RETENTION: kvRetentionPeriod, LABELS: labels, DUPLICATE_POLICY: TimeSeriesDuplicatePolicies.SUM });
 }
 
 export function TS_CREATERULE(client: Redis, sourceKey: string, destinationKey: string, options: ActionOptions) {
