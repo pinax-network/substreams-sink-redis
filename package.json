@@ -33,7 +33,7 @@
             "email": "charles@pinax.network"
         }
     ],
-    "license": "MIT OR Apache-2.0",
+    "license": "MIT",
     "scripts": {
         "start": "tsc && node --no-warnings ./dist/bin/cli.js run",
         "build": "tsc",

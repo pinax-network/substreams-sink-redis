@@ -16,12 +16,12 @@ export function parseKeyPrefix(key: string, prefix?: string) {
 
 export function parseKeyLabels(key: string, labels: Labels) {
     const suffix = Object.keys(labels).map(label => `${label}:${labels[label]}`).join(":")
-    return `${key}:${suffix}`
+    if ( suffix ) return `${key}:${suffix}`
+    return key;
 }
 
 export function parseKey(name: string, options: ActionOptions, labels?: Labels) {
     let prefix = parseKeyPrefix(name, options.kvPrefix);
-    if (labels) return parseKeyLabels(prefix, labels);
+    if (labels && Object.keys(labels).length) return parseKeyLabels(prefix, labels);
     return prefix;
-
 }

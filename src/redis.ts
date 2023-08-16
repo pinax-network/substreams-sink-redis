@@ -23,20 +23,6 @@ export function TS_CREATERULE(client: Redis, sourceKey: string, destinationKey: 
 
 export async function TS_ADD(client: Redis, key: string, value: number, clock: Clock, labels: Labels, options: ActionOptions) {
     const timestamp = toTimestamp(clock);
-
-    if (options.kvCreateRules) {
-        const destinationKey = `${key}:${options.kvBucketDuration}:sum`;
-
-        if (!(await client.EXISTS(destinationKey))) {
-            await TS_CREATE(client, destinationKey, options);
-        }
-        try {
-            await TS_CREATERULE(client, key, destinationKey, options);
-        } catch (error: any) {
-            logger.warn(error);
-        }
-    }
-
     logger.info("TS.ADD", { key, timestamp, value, labels });
     return client.ts.ADD(key, timestamp, value, { ON_DUPLICATE: TimeSeriesDuplicatePolicies.SUM, LABELS: labels, RETENTION: options.kvRetentionPeriod });
 }
