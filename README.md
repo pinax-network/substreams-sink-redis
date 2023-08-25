@@ -90,6 +90,22 @@ Uses the Redis `TS.RANGE` command to retrieve a range of values from a timeserie
 #### Example
 ```
 /TS/RANGE?key=TIMESERIES&fromTimestamp=1602618850000&toTimestamp=1602618426000&aggregationType=SUM&bucketDuration=123
+
+[
+    {
+        "timestamp": 1602618850000,
+        "value": 1086139
+    },
+    {
+        "timestamp": 1602618850123,
+        "value": 1078466
+    },
+    {
+        "timestamp": 1602618850246,
+        "value": 1139608
+    },
+    ...
+]
 ```
 
 ### `/TS/INFO`
