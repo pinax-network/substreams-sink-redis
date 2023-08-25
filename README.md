@@ -64,6 +64,43 @@ Options:
   -h, --help                           display help for command
 ```
 
+## API
+The `substreams-sink-redis` also exposes an API that can be used to interact with the Redis KV store.
+
+### `/GET`
+Uses the Redis `GET` command to retrieve the value of a key.
+#### Params
+- `key`: The key to retrieve the value from.
+#### Example
+```
+/GET?key=foo
+```
+
+### `/INFO`
+Uses the Redis `INFO` command to retrieve information and statistics about the Redis server.
+
+### `/TS/RANGE`
+Uses the Redis `TS.RANGE` command to retrieve a range of values from a timeseries.
+#### Params
+- `key`: The key to retrieve the timeseries from.
+- `fromTimestamp`: Get samples starting from this timestamp *(default is `-`)*.
+- `toTimestamp`: Get samples up to this timestamp *(default is `+`)*.
+- `aggregationType`: The aggregation type to use. Can be one of `AVG`, `SUM`, `MIN`, `MAX`, `RANGE`, `COUNT`, `FIRST`, `LAST`, `STD.P`, `STD.S`, `VAR.P`, `VAR.S`, `RATE`, `RATE.SECOND`, `RATE.MINUTE`, `RATE.HOUR`, `RATE.DAY` *(default is `SUM`)*.
+- `bucketDuration`: The bucket duration in milliseconds *(default is 1)*.
+#### Example
+```
+/TS/RANGE?key=TIMESERIES&fromTimestamp=1602618850000&toTimestamp=1602618426000&aggregationType=SUM&bucketDuration=123
+```
+
+### `/TS/INFO`
+Uses the Redis `TS.INFO` command to retrieve information and statistics about the Redis TimeSeries.
+#### Params
+- `key`: The key to retrieve the timeseries info from.
+#### Example
+```
+/TS/INFO?key=foo
+```
+
 ## Features
 
 - Consume `*.spkg` from:
