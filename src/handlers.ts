@@ -1,4 +1,4 @@
-import type { RedisClientType, RedisDefaultModules, RedisModules, RedisFunctions, RedisScripts } from "redis";
+import { type RedisClientType, type RedisDefaultModules, type RedisModules, type RedisFunctions, type RedisScripts, TimeSeriesAggregationType } from "redis";
 import type { Clock } from "@substreams/core/proto"
 import type { Message, AnyMessage } from "@bufbuild/protobuf"
 import type { KVOperation, KVOperations } from "./generated/sf/substreams/sink/kv/v1/kv_pb.js";
@@ -41,11 +41,14 @@ export async function handlePrometheusOperations(client: Redis, message: Prometh
 // global cache, stores all newly created keys
 const keys = new Set<string>();
 
+// global cache, stores all newly created rules
+const rules = new Set<string>();
+
 export async function createRules(client: Redis, key: string, options: ActionOptions, labels: Labels) {
     if (options.kvCreateRules) {
         const destinationKey = `${key}:${options.kvBucketDuration}:sum`;
 
-        // Rule already created, skip
+        // Destination key and rule already created, skip
         if (keys.has(destinationKey)) return;
 
         // Create source key
@@ -64,11 +67,12 @@ export async function createRules(client: Redis, key: string, options: ActionOpt
                 await TS_CREATE(client, destinationKey, labels, 0); // does not include retention period
                 keys.add(destinationKey);
             } catch (e: any) {
-                logger.warn(`Failed to create key ${key}`, e);
+                logger.warn(`Failed to create destination key ${key}`, e);
             }
+        } else if (!keys.has(destinationKey) && await client.EXISTS(destinationKey)) {
+            keys.add(destinationKey); return;
         }
 
-        // Create Rule
         try {
             await TS_CREATERULE(client, key, destinationKey, options);
         } catch (e: any) {
